@@ -6,7 +6,7 @@ COPY . .
 
 RUN go mod tidy
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o built-binary .
+RUN CGO_ENABLED=0 GOOS=linux go build -o built-binary ./cmd/auth-service/main.go
 
 FROM alpine:latest
 
