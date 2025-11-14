@@ -12,13 +12,13 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder built-binary .
+COPY --from=builder /app/built-binary .
 # Copy any additional files needed for the application
 COPY --from=builder /app/configs/ .
 COPY --from=builder /app/docs/swagger.json .
 
 # Expose port if needed
-# EXPOSE 8080
+EXPOSE ${PORT}
 
 # Set environment variables if needed
 # ENV VAR_NAME=value
