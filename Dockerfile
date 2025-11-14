@@ -14,7 +14,8 @@ WORKDIR /app
 
 COPY --from=builder built-binary .
 # Copy any additional files needed for the application
-# COPY --from=builder /app/config.yaml .
+COPY --from=builder /app/configs/ .
+COPY --from=builder /app/docs/swagger.json .
 
 # Expose port if needed
 # EXPOSE 8080
