@@ -78,8 +78,12 @@ func (h *Handlers) Register() http.HandlerFunc {
 			return
 		}
 
-		if !(validinput.IsValidPassword(registerReq.Password) && validinput.IsValidUsername(registerReq.Username)) {
-			response.SendErrorJson(w, http.StatusBadRequest, "invalid credentials for register")
+		if err := validinput.IsValidUsername(registerReq.Username); err != nil {
+			response.SendErrorJson(w, http.StatusBadRequest, "invalid username for register: %s", err.Error())
+			return
+		}
+		if err := validinput.IsValidPassword(registerReq.Password); err != nil {
+			response.SendErrorJson(w, http.StatusBadRequest, "invalid password for register %s", err.Error())
 			return
 		}
 
