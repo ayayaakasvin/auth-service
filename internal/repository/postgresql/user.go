@@ -9,7 +9,7 @@ import (
 func (p *PostgreSQL) GetPublicUserInfo(ctx context.Context, userID uint) (*models.User, error) {
 	var userObj *models.User = new(models.User)
 	userObj.ID = userID
-	err := p.conn.QueryRowContext(ctx, "SELECT FROM users (username, created_at) WHERE user_id = $1", userID).Scan(
+	err := p.conn.QueryRowContext(ctx, "SELECT username, created_at FROM users  WHERE user_id = $1", userID).Scan(
 		&userObj.Username, &userObj.CreatedAt,
 	)
 
@@ -23,7 +23,7 @@ func (p *PostgreSQL) GetPublicUserInfo(ctx context.Context, userID uint) (*model
 func (p *PostgreSQL) GetPrivateUserInfo(ctx context.Context, userID uint) (*models.User, error) {
 	var userObj *models.User = new(models.User)
 	userObj.ID = userID
-	err := p.conn.QueryRowContext(ctx, "SELECT FROM users (username, password, created_at) WHERE user_id = $1", userID).Scan(
+	err := p.conn.QueryRowContext(ctx, "SELECT username, password, created_at FROM users  WHERE user_id = $1", userID).Scan(
 		&userObj.Username, &userObj.PasswordHash, &userObj.CreatedAt,
 	)
 
