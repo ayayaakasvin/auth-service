@@ -14,8 +14,8 @@ WORKDIR /app
 
 COPY --from=builder /app/built-binary .
 # Copy any additional files needed for the application
-COPY --from=builder /app/configs/ .
-COPY --from=builder /app/docs/swagger.json .
+COPY --from=builder /app/configs ./configs
+COPY --from=builder /app/docs/swagger.json ./docs/swagger.json
 
 # Expose port if needed
 EXPOSE ${PORT}
