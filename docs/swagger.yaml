@@ -1,0 +1,85 @@
+definitions:
+  models.User:
+    properties:
+      created_at:
+        example: "2025-11-14 10:23:45"
+        type: string
+      passwordHash:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  response.Data:
+    additionalProperties: {}
+    type: object
+  response.JsonResponse:
+    properties:
+      data:
+        $ref: '#/definitions/response.Data'
+      message:
+        description: in case of error
+        type: string
+      state:
+        description: either error or success
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/me:
+    get:
+      consumes:
+      - application/json
+      description: Returns a user info (including sensitive fields) by JWT
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.JsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Get Private User Info
+      tags:
+      - users
+  /api/public/user:
+    get:
+      consumes:
+      - application/json
+      description: Returns a user info by ID query parameter (public data only)
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.JsonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.JsonResponse'
+      summary: Get Public User Info
+      tags:
+      - users
+swagger: "2.0"
