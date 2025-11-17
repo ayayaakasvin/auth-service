@@ -5,6 +5,8 @@ import (
 
 	"github.com/ayayaakasvin/auth-service/internal/ctx"
 	"github.com/ayayaakasvin/auth-service/internal/models/response"
+
+	_ "github.com/ayayaakasvin/auth-service/internal/models" // for swagger
 )
 
 const userInfoKey = "user_id"

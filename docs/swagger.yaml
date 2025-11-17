@@ -1,23 +1,33 @@
 definitions:
-  models.User:
+  github_com_ayayaakasvin_auth-service_internal_models.User:
     properties:
       created_at:
         example: "2025-11-14 10:23:45"
         type: string
-      passwordHash:
+      hashed_password:
+        example: $2a1ASDf
         type: string
       user_id:
+        example: 123
         type: integer
+      username:
+        example: alice
+        type: string
+    type: object
+  github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest:
+    properties:
+      password:
+        type: string
       username:
         type: string
     type: object
-  response.Data:
+  github_com_ayayaakasvin_auth-service_internal_models_response.Data:
     additionalProperties: {}
     type: object
-  response.JsonResponse:
+  github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse:
     properties:
       data:
-        $ref: '#/definitions/response.Data'
+        $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.Data'
       message:
         description: in case of error
         type: string
@@ -28,6 +38,65 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user and returns access and refresh tokens
+      parameters:
+      - description: Login payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+      summary: Log in
+      tags:
+      - auth
+  /api/logout:
+    post:
+      consumes:
+      - application/json
+      description: Invalidates the current session (deletes session id)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Log out
+      tags:
+      - auth
   /api/me:
     get:
       consumes:
@@ -39,15 +108,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models.User'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.JsonResponse'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/response.JsonResponse'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
       security:
       - ApiKeyAuth: []
       summary: Get Private User Info
@@ -70,16 +139,80 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models.User'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.JsonResponse'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/response.JsonResponse'
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
       summary: Get Public User Info
       tags:
       - users
+  /api/refresh:
+    post:
+      consumes:
+      - application/json
+      description: Exchanges a refresh token (sent in Authorization header) for a
+        new access token
+      parameters:
+      - description: 'Refresh token in format: Bearer <token>'
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+      summary: Refresh access token
+      tags:
+      - auth
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user account
+      parameters:
+      - description: Register payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse'
+      summary: Register a new user
+      tags:
+      - auth
 swagger: "2.0"

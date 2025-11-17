@@ -18,6 +18,18 @@ const (
 	AuthorizationHeader = "Authorization"
 )
 
+// LogIn handler
+// @Summary      Log in
+// @Description  Authenticates a user and returns access and refresh tokens
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        payload  body      request.UserRequest  true  "Login payload"
+// @Success      200      {object}  response.JsonResponse
+// @Failure      400      {object}  response.JsonResponse
+// @Failure      401      {object}  response.JsonResponse
+// @Failure      500      {object}  response.JsonResponse
+// @Router       /api/login [post]
 func (h *Handlers) LogIn() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var loginReq request.UserRequest
@@ -56,20 +68,17 @@ func (h *Handlers) LogIn() http.HandlerFunc {
 	}
 }
 
-// LogIn handler
-// @Summary      Log in
-// @Description  Authenticates a user and returns access and refresh tokens
+// Register handler
+// @Summary      Register a new user
+// @Description  Creates a new user account
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        payload  body      request.UserRequest  true  "Login payload"
-// @Success      200      {object}  response.JsonResponse
+// @Param        payload  body      request.UserRequest  true  "Register payload"
+// @Success      201      {object}  response.JsonResponse
 // @Failure      400      {object}  response.JsonResponse
-// @Failure      401      {object}  response.JsonResponse
 // @Failure      500      {object}  response.JsonResponse
-// @Router       /api/login [post]
-//
-
+// @Router       /api/register [post]
 func (h *Handlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var registerReq request.UserRequest
@@ -104,19 +113,17 @@ func (h *Handlers) Register() http.HandlerFunc {
 	}
 }
 
-// Register handler
-// @Summary      Register a new user
-// @Description  Creates a new user account
+// LogOut handler
+// @Summary      Log out
+// @Description  Invalidates the current session (deletes session id)
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        payload  body      request.UserRequest  true  "Register payload"
-// @Success      201      {object}  response.JsonResponse
-// @Failure      400      {object}  response.JsonResponse
+// @Security     ApiKeyAuth
+// @Success      200      {object}  response.JsonResponse
+// @Failure      401      {object}  response.JsonResponse
 // @Failure      500      {object}  response.JsonResponse
-// @Router       /api/register [post]
-//
-
+// @Router       /api/logout [post]
 func (h *Handlers) LogOut() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session_id, ok := r.Context().Value(ctx.CtxSessionIDKey).(string)
@@ -135,19 +142,18 @@ func (h *Handlers) LogOut() http.HandlerFunc {
 	}
 }
 
-// LogOut handler
-// @Summary      Log out
-// @Description  Invalidates the current session (deletes session id)
+// RefreshTheToken handler
+// @Summary      Refresh access token
+// @Description  Exchanges a refresh token (sent in Authorization header) for a new access token
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Security     ApiKeyAuth
-// @Success      200      {object}  response.JsonResponse
-// @Failure      401      {object}  response.JsonResponse
-// @Failure      500      {object}  response.JsonResponse
-// @Router       /api/logout [post]
-//
-
+// @Param        Authorization  header    string  true  "Refresh token in format: Bearer <token>"
+// @Success      200            {object}  response.JsonResponse
+// @Failure      400            {object}  response.JsonResponse
+// @Failure      401            {object}  response.JsonResponse
+// @Failure      500            {object}  response.JsonResponse
+// @Router       /api/refresh [post]
 func (h *Handlers) RefreshTheToken() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(AuthorizationHeader)
@@ -196,16 +202,3 @@ func (h *Handlers) RefreshTheToken() http.HandlerFunc {
 		response.SendSuccessJson(w, http.StatusOK, data)
 	}
 }
-
-// RefreshTheToken handler
-// @Summary      Refresh access token
-// @Description  Exchanges a refresh token (sent in Authorization header) for a new access token
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        Authorization  header    string  true  "Refresh token in format: Bearer <token>"
-// @Success      200            {object}  response.JsonResponse
-// @Failure      400            {object}  response.JsonResponse
-// @Failure      401            {object}  response.JsonResponse
-// @Failure      500            {object}  response.JsonResponse
-// @Router       /api/refresh [post]

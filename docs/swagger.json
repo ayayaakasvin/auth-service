@@ -4,6 +4,98 @@
         "contact": {}
     },
     "paths": {
+        "/api/login": {
+            "post": {
+                "description": "Authenticates a user and returns access and refresh tokens",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log in",
+                "parameters": [
+                    {
+                        "description": "Login payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Invalidates the current session (deletes session id)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Log out",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/me": {
             "get": {
                 "security": [
@@ -26,19 +118,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models.User"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.JsonResponse"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.JsonResponse"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
                         }
                     }
                 }
@@ -70,19 +162,115 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models.User"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.JsonResponse"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.JsonResponse"
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "description": "Exchanges a refresh token (sent in Authorization header) for a new access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh access token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Refresh token in format: Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "description": "Creates a new user account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "Register payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse"
                         }
                     }
                 }
@@ -90,33 +278,47 @@
         }
     },
     "definitions": {
-        "models.User": {
+        "github_com_ayayaakasvin_auth-service_internal_models.User": {
             "type": "object",
             "properties": {
                 "created_at": {
                     "type": "string",
                     "example": "2025-11-14 10:23:45"
                 },
-                "passwordHash": {
-                    "type": "string"
+                "hashed_password": {
+                    "type": "string",
+                    "example": "$2a1ASDf"
                 },
                 "user_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 123
+                },
+                "username": {
+                    "type": "string",
+                    "example": "alice"
+                }
+            }
+        },
+        "github_com_ayayaakasvin_auth-service_internal_models_request.UserRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"
                 }
             }
         },
-        "response.Data": {
+        "github_com_ayayaakasvin_auth-service_internal_models_response.Data": {
             "type": "object",
             "additionalProperties": {}
         },
-        "response.JsonResponse": {
+        "github_com_ayayaakasvin_auth-service_internal_models_response.JsonResponse": {
             "type": "object",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/response.Data"
+                    "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models_response.Data"
                 },
                 "message": {
                     "description": "in case of error",
