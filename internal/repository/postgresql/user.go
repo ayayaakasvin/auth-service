@@ -23,8 +23,8 @@ func (p *PostgreSQL) GetPublicUserInfo(ctx context.Context, userID uint) (*model
 func (p *PostgreSQL) GetPrivateUserInfo(ctx context.Context, userID uint) (*models.User, error) {
 	var userObj *models.User = new(models.User)
 	userObj.ID = userID
-	err := p.conn.QueryRowContext(ctx, "SELECT username, password, created_at FROM users  WHERE user_id = $1", userID).Scan(
-		&userObj.Username, &userObj.PasswordHash, &userObj.CreatedAt,
+	err := p.conn.QueryRowContext(ctx, "SELECT username, created_at FROM users  WHERE user_id = $1", userID).Scan(
+		&userObj.Username, &userObj.CreatedAt,
 	)
 
 	if err != nil {
