@@ -1,6 +1,6 @@
 module github.com/ayayaakasvin/auth-service
 
-go 1.25.3
+go 1.25.4
 
 require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect

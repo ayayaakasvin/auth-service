@@ -2,24 +2,24 @@
 package handlers
 
 import (
-	"github.com/ayayaakasvin/auth-service/internal/jwttool"
 	"github.com/ayayaakasvin/auth-service/internal/models/core"
+	"github.com/ayayaakasvin/auth-service/internal/services/jwtservice"
 	"github.com/sirupsen/logrus"
 )
 
 type Handlers struct {
-	repo		core.Repository
-	cache 		core.Cache
-	jwtM		*jwttool.JWTManager
+	repo  core.Repository
+	cache core.Cache
+	jwtM  *jwtservice.JWTService
 
-	logger 		*logrus.Logger
+	logger *logrus.Logger
 }
 
-func NewHTTPHandlers(repo core.Repository, cache core.Cache, logger *logrus.Logger, jwtM *jwttool.JWTManager) *Handlers {
+func NewHTTPHandlers(repo core.Repository, cache core.Cache, logger *logrus.Logger, jwtM *jwtservice.JWTService) *Handlers {
 	return &Handlers{
-		repo: repo,
+		repo:  repo,
 		cache: cache,
-		jwtM: jwtM,
+		jwtM:  jwtM,
 
 		logger: logger,
 	}

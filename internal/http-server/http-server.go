@@ -8,8 +8,8 @@ import (
 	"github.com/ayayaakasvin/auth-service/internal/config"
 	"github.com/ayayaakasvin/auth-service/internal/http-server/handlers"
 	"github.com/ayayaakasvin/auth-service/internal/http-server/middlewares"
-	"github.com/ayayaakasvin/auth-service/internal/jwttool"
 	"github.com/ayayaakasvin/auth-service/internal/models/core"
+	"github.com/ayayaakasvin/auth-service/internal/services/jwtservice"
 	goshutdownchannel "github.com/ayayaakasvin/go-shutdown-channel"
 	"github.com/ayayaakasvin/lightmux"
 	"github.com/sirupsen/logrus"
@@ -25,7 +25,7 @@ type ServerApp struct {
 
 	repo  core.Repository
 	cache core.Cache
-	jwtM  *jwttool.JWTManager
+	jwtM  *jwtservice.JWTService
 
 	cfg *config.HTTPServer
 
@@ -38,7 +38,7 @@ func NewServerApp(
 	logger *logrus.Logger,
 	repo core.Repository,
 	cache core.Cache,
-	jwtM *jwttool.JWTManager,
+	jwtM *jwtservice.JWTService,
 ) *ServerApp {
 	return &ServerApp{
 		cfg:    cfg,
@@ -101,7 +101,7 @@ func (s *ServerApp) setupLightMux() {
 		w.WriteHeader(200)
 		w.Write([]byte("pong"))
 	})
-	s.lmux.NewRoute("/panic").Handle(http.MethodGet, PanicHandler())
+	// s.lmux.NewRoute("/panic").Handle(http.MethodGet, PanicHandler())
 
 	apiGroup := s.lmux.NewGroup("/api")
 
@@ -113,7 +113,7 @@ func (s *ServerApp) setupLightMux() {
 	apiGroup.NewRoute("/public/user").Handle(http.MethodGet, hndlrs.PublicUserInfo())
 	apiGroup.NewRoute("/me", mws.JWTAuthMiddleware).Handle(http.MethodGet, hndlrs.PrivateUserInfo())
 
-	s.lmux.Mux().HandleFunc("/swagger/",httpSwagger.WrapHandler)
+	s.lmux.Mux().HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	s.logger.Info("LightMux has been set up")
 }

@@ -12,6 +12,7 @@ var testUserInfo *models.User = &models.User{
 	ID:           0,
 	Username:     "Jane Doe",
 	PasswordHash: "hashedPassword",
+	Role:         "test",
 	CreatedAt:    time.Unix(0, 0),
 }
 
@@ -19,7 +20,7 @@ type PostgreSQL_Mock struct{}
 
 // AuthentificateUser implements core.Repository.
 func (p *PostgreSQL_Mock) AuthentificateUser(ctx context.Context, username string, password string) (uint, error) {
-	return 0, nil
+	return testUserInfo.ID, nil
 }
 
 // Close implements core.Repository.

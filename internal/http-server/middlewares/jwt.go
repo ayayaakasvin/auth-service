@@ -6,6 +6,7 @@ import (
 
 	"github.com/ayayaakasvin/auth-service/internal/ctx"
 	"github.com/ayayaakasvin/auth-service/internal/models/response"
+	"github.com/ayayaakasvin/auth-service/internal/models/token"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -28,44 +29,40 @@ func (m *Middlewares) JWTAuthMiddleware(next http.HandlerFunc) http.HandlerFunc 
 			return
 		}
 
-		claims, err := m.jwtManager.ValidateJWT(tokenString)
+		cl, err := m.jwtManager.Validate(tokenString, &token.AccessTokenClaims{})
 		if err != nil {
 			unauthorized(w, "failed to validate jwt")
 			return
 		}
 
-		sessionIdAny, exists := claims["session_id"]
-		if !exists {
+		fullClaims, ok := cl.(*token.AccessTokenClaims)
+		if !ok {
+			unauthorized(w, "invalid claims")
+			return
+		}
+
+		if fullClaims.SessionID == "" {
 			unauthorized(w, "session_id missing")
 			return
 		}
 
-		sessionId := sessionIdAny.(string)
-
-		if _, err := m.cache.Get(r.Context(), sessionId); err == redis.Nil {
+		if _, err := m.cache.Get(r.Context(), fullClaims.SessionID); err == redis.Nil {
 			unauthorized(w, "session is expired")
 			return
 		}
 
-		userIdAny, ok := claims["user_id"]
-		if !ok || userIdAny == nil {
-			unauthorized(w, "user_id missing")
+		if fullClaims.UserID == 0 {
+			unauthorized(w, "user_id missing or invalid")
 			return
 		}
 
-		userIdInt, err := m.jwtManager.FetchUserID(userIdAny)
-		if err != nil {
-			unauthorized(w, "user_id is invalid")
-			return
-		}
-
-		r = ctx.WrapValueIntoRequest(r, ctx.CtxUserIDKey, userIdInt)
-		r = ctx.WrapValueIntoRequest(r, ctx.CtxSessionIDKey, sessionId)
+		r = ctx.WrapValueIntoRequest(r, ctx.CtxUserIDKey, fullClaims.UserID)
+		r = ctx.WrapValueIntoRequest(r, ctx.CtxSessionIDKey, fullClaims.SessionID)
 
 		next(w, r)
 	}
 }
 
-func unauthorized(w http.ResponseWriter, msg string)  {
+func unauthorized(w http.ResponseWriter, msg string) {
 	response.SendErrorJson(w, http.StatusUnauthorized, "%s", msg)
 }

@@ -10,6 +10,7 @@ import (
 	"github.com/ayayaakasvin/auth-service/internal/libs/validinput"
 	"github.com/ayayaakasvin/auth-service/internal/models/request"
 	"github.com/ayayaakasvin/auth-service/internal/models/response"
+	"github.com/ayayaakasvin/auth-service/internal/models/token"
 	"github.com/ayayaakasvin/auth-service/internal/repository/postgresql"
 	"github.com/google/uuid"
 )
@@ -50,8 +51,20 @@ func (h *Handlers) LogIn() http.HandlerFunc {
 		}
 
 		sessionId := uuid.New().String()
-		accessToken := h.jwtM.GenerateAccessToken(userId, sessionId, h.jwtM.AccessTokenTTL)
-		refreshToken := h.jwtM.GenerateRefreshToken(userId, h.jwtM.RefreshTokenTTL)
+
+		accessToken, err := h.jwtM.GenerateToken(token.NewAccessTokenClaims(userId, sessionId, h.jwtM.AccessTokenTTL))
+		if err != nil {
+			response.SendErrorJson(w, http.StatusInternalServerError, "access token generation error")
+			h.logger.WithError(err).Error("failed to generate token")
+			return
+		}
+
+		refreshToken, err := h.jwtM.GenerateToken(token.NewRefreshTokenClaims(userId, h.jwtM.RefreshTokenTTL))
+		if err != nil {
+			response.SendErrorJson(w, http.StatusInternalServerError, "refresh token generation error")
+			h.logger.WithError(err).Error("failed to generate token")
+			return
+		}
 
 		data := response.NewData()
 		data["access-token"] = accessToken
@@ -59,7 +72,7 @@ func (h *Handlers) LogIn() http.HandlerFunc {
 		h.logger.Info(data)
 
 		if err := h.cache.Set(r.Context(), sessionId, true, h.jwtM.AccessTokenTTL); err != nil {
-			h.logger.WithField("session_id", sessionId).Error("failed to set session id")
+			h.logger.WithField("session_id", sessionId).WithError(err).Error("failed to set session id")
 			response.SendErrorJson(w, http.StatusInternalServerError, "cache error")
 			return
 		}
@@ -168,26 +181,31 @@ func (h *Handlers) RefreshTheToken() http.HandlerFunc {
 			return
 		}
 
-		claims, err := h.jwtM.ValidateJWT(refreshTokenString)
+		cl, err := h.jwtM.Validate(refreshTokenString, &token.RefreshTokenClaims{})
 		if err != nil {
 			response.SendErrorJson(w, http.StatusUnauthorized, "failed to validate jwt")
 			return
 		}
 
-		userIdAny, ok := claims["user_id"]
+		fullClaims, ok := cl.(*token.RefreshTokenClaims)
 		if !ok {
+			response.SendErrorJson(w, http.StatusUnauthorized, "invalid claims")
+			return
+		}
+
+		if fullClaims.UserID == 0 {
 			response.SendErrorJson(w, http.StatusUnauthorized, "user_id is missing in refresh token")
 			return
 		}
 
-		userId, err := h.jwtM.FetchUserID(userIdAny)
+		sessionId := uuid.New().String()
+
+		accessToken, err := h.jwtM.GenerateToken(token.NewAccessTokenClaims(fullClaims.UserID, sessionId, h.jwtM.AccessTokenTTL))
 		if err != nil {
-			response.SendErrorJson(w, http.StatusUnauthorized, "user_id is invalid")
+			response.SendErrorJson(w, http.StatusInternalServerError, "access token generation error")
+			h.logger.WithError(err).Error("failed to generate token")
 			return
 		}
-
-		sessionId := uuid.New().String()
-		accessToken := h.jwtM.GenerateAccessToken(userId, sessionId, h.jwtM.AccessTokenTTL)
 
 		data := response.NewData()
 		data["access-token"] = accessToken

@@ -4,6 +4,8 @@ github.com/KyleBanks/depth v1.2.1 h1:5h8fQADFrWtarTdtDudMmGsC7GPbOAu6RVB3ffsVFHc
 github.com/KyleBanks/depth v1.2.1/go.mod h1:jzSb9d0L43HxTQfT+oSA1EEp2q+ne2uh6XgeJcm8brE=
 github.com/agiledragon/gomonkey/v2 v2.3.1 h1:k+UnUY0EMNYUFUAQVETGY9uUTxjMdnUkP0ARyJS1zzs=
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
+github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa h1:126OQFNEBcjvrYhVV0E4j5hpN5b6wiL8G8M2FxV/XJg=
+github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa/go.mod h1:8aeLyX1wLY4RwxT2ggHyFLeDpqskGreDi58JpIEc6p0=
 github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a h1:vE31lHb4yQ/WlJeosFg/ykNPqfpwG+3BraUDSSmpO2k=
 github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a/go.mod h1:3+NAG2c0aNvp83Iq0cckponXmh/u4KdyCOdoTgjfbL4=
 github.com/ayayaakasvin/lightmux v0.0.0-20251112144435-ce75c8447d13 h1:nbuUjPB3KyGpJYlmT+fXmlfA6Nc2gKLaZjzvkknlpqk=
