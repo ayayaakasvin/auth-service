@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod tidy
+RUN go mod download
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o built-binary ./cmd/auth-service/main.go
 
