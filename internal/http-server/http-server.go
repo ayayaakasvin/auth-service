@@ -119,7 +119,7 @@ func (s *ServerApp) setupLightMux() {
 }
 
 func printServerStatus(ctx context.Context, log *logrus.Logger) {
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Minute * 1)
 
 	for {
 		select {
