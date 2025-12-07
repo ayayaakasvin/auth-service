@@ -27,7 +27,8 @@ type ServerApp struct {
 	cache core.Cache
 	jwtM  *jwtservice.JWTService
 
-	cfg *config.HTTPServer
+	httpcfg *config.HTTPServer
+	corscfg *config.CorsConfig
 
 	logger *logrus.Logger
 }
@@ -42,7 +43,9 @@ func NewServerApp(
 	jwtM *jwtservice.JWTService,
 ) *ServerApp {
 	return &ServerApp{
-		cfg:    httpcfg,
+		httpcfg: httpcfg,
+		corscfg: corscfg,
+
 		logger: logger,
 		repo:   repo,
 		cache:  cache,
@@ -60,7 +63,7 @@ func (s *ServerApp) Run() {
 }
 
 func (s *ServerApp) startServer() {
-	s.logger.Infof("Server has been started on port: %s", s.cfg.Address)
+	s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
 	s.logger.Infof("Available handlers:\n")
 
 	s.lmux.PrintMiddlewareInfo()
@@ -82,10 +85,10 @@ func (s *ServerApp) setupServer() {
 		s.server = &http.Server{}
 	}
 
-	s.server.Addr = s.cfg.Address
-	s.server.IdleTimeout = s.cfg.IdleTimeout
-	s.server.ReadTimeout = s.cfg.Timeout
-	s.server.WriteTimeout = s.cfg.Timeout
+	s.server.Addr = s.httpcfg.Address
+	s.server.IdleTimeout = s.httpcfg.IdleTimeout
+	s.server.ReadTimeout = s.httpcfg.Timeout
+	s.server.WriteTimeout = s.httpcfg.Timeout
 
 	s.logger.Info("Server has been set up")
 }
@@ -93,7 +96,7 @@ func (s *ServerApp) setupServer() {
 func (s *ServerApp) setupLightMux() {
 	s.lmux = lightmux.NewLightMux(s.server)
 
-	mws := middlewares.NewHTTPMiddlewares(s.logger, config.CorsConfig{}, s.cache,s.jwtM)
+	mws := middlewares.NewHTTPMiddlewares(s.logger, *s.corscfg, s.cache, s.jwtM)
 	hndlrs := handlers.NewHTTPHandlers(s.repo, s.cache, s.logger, s.jwtM)
 
 	s.lmux.Use(mws.RecoverMiddleware, mws.LoggerMiddleware, mws.CORSMiddleware)

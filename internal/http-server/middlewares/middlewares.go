@@ -26,9 +26,9 @@ func NewHTTPMiddlewares(logger *logrus.Logger, corsCfg config.CorsConfig, cache 
 		cache:      cache,
 		jwtManager: jwtManager,
 
-		allowedOrigins: strings.Join(corsCfg.AllowedOrigins, ","),
-		allowedMethods: strings.Join(corsCfg.AllowedMethods, ","),
-		allowedHeaders: strings.Join(corsCfg.AllowedHeaders, ","),
+		allowedOrigins:   strings.Join(corsCfg.AllowedOrigins, ","),
+		allowedMethods:   strings.Join(corsCfg.AllowedMethods, ","),
+		allowedHeaders:   strings.Join(corsCfg.AllowedHeaders, ","),
 		allowCredentials: corsCfg.AllowedCredentials,
 	}
 }
