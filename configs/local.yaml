@@ -6,3 +6,12 @@ http-server:
 jwt:
   access_ttl: 10m
   refresh_ttl: 168h
+
+cors:
+  allowed_origins: 
+    - "*"
+  allowed_methods: 
+    - "*"
+  allowed_headers:
+    - "*"
+  allow_credentials: true

@@ -10,48 +10,57 @@ import (
 )
 
 const (
-	configPathEnvKey 	= "CONFIG_PATH"
-	postgresURLEnvKey 	= "POSTGRES_URL"
-	valkeyURLEnvKey 	= "VALKEY_URL"
-	jwtSecretKey	 	= "JWT_SECRET"
+	configPathEnvKey  = "CONFIG_PATH"
+	postgresURLEnvKey = "POSTGRES_URL"
+	valkeyURLEnvKey   = "VALKEY_URL"
+	jwtSecretKey      = "JWT_SECRET"
 )
 
 // Config represents the configuration structure
 type Config struct {
-    // Add your configuration fields here
-    // Example:
-    // Port int `yaml:"port"`
-	HTTPServer						`yaml:"http-server"`
+	// Add your configuration fields here
+	// Example:
+	// Port int `yaml:"port"`
+	HTTPServer `yaml:"http-server"`
+
+	CorsConfig `yaml:"cors"`
 
 	PostgreSQLConfig
 
 	ValkeyConfig
 
-	JWTSecret						`yaml:"jwt"`
+	JWTSecret `yaml:"jwt"`
+}
+
+type CorsConfig struct {
+	AllowedOrigins     []string `yaml:"allowed_origins"`
+	AllowedMethods     []string `yaml:"allowed_methods"`
+	AllowedHeaders     []string `yaml:"allowed_headers"`
+	AllowedCredentials bool     `yaml:"allow_credentials"`
 }
 
 type HTTPServer struct {
-	Address     	string        	`yaml:"address"					env-default:"localhost:8080"`
-	Timeout     	time.Duration 	`yaml:"timeout" 															env-required:"true"`
-	IdleTimeout 	time.Duration 	`yaml:"idle_timeout" 														env-required:"true"`
+	Address     string        `yaml:"address"					env-default:"localhost:8080"`
+	Timeout     time.Duration `yaml:"timeout" 															env-required:"true"`
+	IdleTimeout time.Duration `yaml:"idle_timeout" 														env-required:"true"`
 }
 
 type PostgreSQLConfig struct {
-	URL 			string
+	URL string
 }
 
 type ValkeyConfig struct {
-	URL				string
+	URL string
 }
 
 type JWTSecret struct {
-	Secret 			string			
-	AccessTokenTTL	time.Duration	`yaml:"access_ttl"				env-default:"10m"							env-required:"true"`
-	RefreshTokenTTL	time.Duration	`yaml:"refresh_ttl"				env-default:"168h"							env-required:"true"`
+	Secret          string
+	AccessTokenTTL  time.Duration `yaml:"access_ttl"				env-default:"10m"							env-required:"true"`
+	RefreshTokenTTL time.Duration `yaml:"refresh_ttl"				env-default:"168h"							env-required:"true"`
 }
 
 // MustLoadConfig loads the configuration from the specified path
-func MustLoadConfig () *Config {
+func MustLoadConfig() *Config {
 	if err := godotenv.Load(); err != nil {
 		log.Println(".env not found, falling back to local variables")
 	}

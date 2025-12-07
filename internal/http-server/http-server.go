@@ -34,14 +34,15 @@ type ServerApp struct {
 
 func NewServerApp(
 	s *goshutdownchannel.Shutdown,
-	cfg *config.HTTPServer,
+	httpcfg *config.HTTPServer,
+	corscfg *config.CorsConfig,
 	logger *logrus.Logger,
 	repo core.Repository,
 	cache core.Cache,
 	jwtM *jwtservice.JWTService,
 ) *ServerApp {
 	return &ServerApp{
-		cfg:    cfg,
+		cfg:    httpcfg,
 		logger: logger,
 		repo:   repo,
 		cache:  cache,
@@ -92,10 +93,10 @@ func (s *ServerApp) setupServer() {
 func (s *ServerApp) setupLightMux() {
 	s.lmux = lightmux.NewLightMux(s.server)
 
-	mws := middlewares.NewHTTPMiddlewares(s.logger, s.cache, s.jwtM)
+	mws := middlewares.NewHTTPMiddlewares(s.logger, config.CorsConfig{}, s.cache,s.jwtM)
 	hndlrs := handlers.NewHTTPHandlers(s.repo, s.cache, s.logger, s.jwtM)
 
-	s.lmux.Use(mws.RecoverMiddleware, mws.LoggerMiddleware)
+	s.lmux.Use(mws.RecoverMiddleware, mws.LoggerMiddleware, mws.CORSMiddleware)
 
 	s.lmux.NewRoute("/ping").Handle(http.MethodGet, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
@@ -131,6 +132,7 @@ func printServerStatus(ctx context.Context, log *logrus.Logger) {
 	}
 }
 
+// Used for recover test
 func PanicHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		panic("ambatubas")

@@ -42,7 +42,7 @@ func main() {
 	jwtM := jwtservice.NewJWTManager(&cfg.JWTSecret)
 	log.Info("Dependencies retrieved")
 
-	app := httpserver.NewServerApp(s, &cfg.HTTPServer, log, repo, cc, jwtM)
+	app := httpserver.NewServerApp(s, &cfg.HTTPServer, &cfg.CorsConfig, log, repo, cc, jwtM)
 	log.Info("New Application set up finished")
 
 	go func() {

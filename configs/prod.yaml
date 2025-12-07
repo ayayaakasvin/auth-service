@@ -6,3 +6,16 @@ http-server:
 jwt:
   access_ttl: 10m
   refresh_ttl: 168h
+
+cors:
+  allowed_origins: 
+    - "apigateawaydomain"
+  allowed_methods: 
+    - "GET"
+    - "DELETE"
+    - "POST"
+  allowed_headers:
+    - "Authorization"
+    - "Content-Type"
+    - "Accept"
+  allow_credentials: true
