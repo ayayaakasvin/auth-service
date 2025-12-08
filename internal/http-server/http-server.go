@@ -104,7 +104,7 @@ func (s *ServerApp) setupLightMux() {
 
 	s.lmux.Use(mws.RecoverMiddleware, mws.LoggerMiddleware, mws.CORSMiddleware)
 
-	apiGroup := s.lmux.NewGroup("/api/auth", mws.GateAwayMiddleware)
+	apiGroup := s.lmux.NewGroup("/api", mws.GateAwayMiddleware)
 	authGroup := apiGroup.ContinueGroup("/auth")
 
 	authGroup.NewRoute("/ping").Handle(http.MethodGet, hndlrs.PingHandler())
