@@ -21,7 +21,7 @@ const userInfoKey = "user_id"
 // @Success      200  {object}  models.User
 // @Failure      400  {object}  response.JsonResponse
 // @Failure      404  {object}  response.JsonResponse
-// @Router       /api/public/user [get]
+// @Router       /api/auth/public/user [get]
 func (h *Handlers) PublicUserInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDString := r.URL.Query().Get(userInfoKey)
@@ -55,7 +55,7 @@ func (h *Handlers) PublicUserInfo() http.HandlerFunc {
 // @Failure      400  {object}  response.JsonResponse
 // @Failure      500  {object}  response.JsonResponse
 // @Security     ApiKeyAuth
-// @Router       /api/me [get]
+// @Router       /api/auth/me [get]
 func (h *Handlers) PrivateUserInfo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userIDUint := r.Context().Value(ctx.CtxUserIDKey).(uint)

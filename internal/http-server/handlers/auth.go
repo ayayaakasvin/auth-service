@@ -30,7 +30,7 @@ const (
 // @Failure      400      {object}  response.JsonResponse
 // @Failure      401      {object}  response.JsonResponse
 // @Failure      500      {object}  response.JsonResponse
-// @Router       /api/login [post]
+// @Router       /api/auth/login [post]
 func (h *Handlers) LogIn() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var loginReq request.UserRequest
@@ -91,7 +91,7 @@ func (h *Handlers) LogIn() http.HandlerFunc {
 // @Success      201      {object}  response.JsonResponse
 // @Failure      400      {object}  response.JsonResponse
 // @Failure      500      {object}  response.JsonResponse
-// @Router       /api/register [post]
+// @Router       /api/auth/register [post]
 func (h *Handlers) Register() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var registerReq request.UserRequest
@@ -136,7 +136,7 @@ func (h *Handlers) Register() http.HandlerFunc {
 // @Success      200      {object}  response.JsonResponse
 // @Failure      401      {object}  response.JsonResponse
 // @Failure      500      {object}  response.JsonResponse
-// @Router       /api/logout [post]
+// @Router       /api/auth/logout [post]
 func (h *Handlers) LogOut() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session_id, ok := r.Context().Value(ctx.CtxSessionIDKey).(string)
@@ -166,7 +166,7 @@ func (h *Handlers) LogOut() http.HandlerFunc {
 // @Failure      400            {object}  response.JsonResponse
 // @Failure      401            {object}  response.JsonResponse
 // @Failure      500            {object}  response.JsonResponse
-// @Router       /api/refresh [post]
+// @Router       /api/auth/refresh [post]
 func (h *Handlers) RefreshTheToken() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(AuthorizationHeader)

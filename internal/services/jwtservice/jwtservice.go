@@ -13,7 +13,6 @@ import (
 
 type JWTService struct {
 	*genericjwtservice.JWTService
-	Secret []byte
 
 	AccessTokenTTL  time.Duration
 	RefreshTokenTTL time.Duration

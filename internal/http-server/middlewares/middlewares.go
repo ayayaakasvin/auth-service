@@ -10,9 +10,10 @@ import (
 )
 
 type Middlewares struct {
-	cache      core.Cache
-	logger     *logrus.Logger
-	jwtManager *jwtservice.JWTService
+	cache          core.Cache
+	logger         *logrus.Logger
+	jwtManager     *jwtservice.JWTService
+	gateawaySecret string
 
 	allowedOrigins   string
 	allowedMethods   string
@@ -20,11 +21,12 @@ type Middlewares struct {
 	allowCredentials bool
 }
 
-func NewHTTPMiddlewares(logger *logrus.Logger, corsCfg config.CorsConfig, cache core.Cache, jwtManager *jwtservice.JWTService) *Middlewares {
+func NewHTTPMiddlewares(logger *logrus.Logger, corsCfg config.CorsConfig, gateawaySecret string, cache core.Cache, jwtManager *jwtservice.JWTService) *Middlewares {
 	return &Middlewares{
-		logger:     logger,
-		cache:      cache,
-		jwtManager: jwtManager,
+		logger:         logger,
+		cache:          cache,
+		jwtManager:     jwtManager,
+		gateawaySecret: gateawaySecret,
 
 		allowedOrigins:   strings.Join(corsCfg.AllowedOrigins, ","),
 		allowedMethods:   strings.Join(corsCfg.AllowedMethods, ","),

@@ -14,6 +14,7 @@ const (
 	postgresURLEnvKey = "POSTGRES_URL"
 	valkeyURLEnvKey   = "VALKEY_URL"
 	jwtSecretKey      = "JWT_SECRET"
+	gateawaySecretKey = "GATEAWAY_SECRET_KEY"
 )
 
 // Config represents the configuration structure
@@ -24,6 +25,8 @@ type Config struct {
 	HTTPServer `yaml:"http-server"`
 
 	CorsConfig `yaml:"cors"`
+
+	GateawaySecret string
 
 	PostgreSQLConfig
 
@@ -82,10 +85,12 @@ func MustLoadConfig() *Config {
 	postgresURL := os.Getenv(postgresURLEnvKey)
 	valkeyURL := os.Getenv(valkeyURLEnvKey)
 	jwtSecret := os.Getenv(jwtSecretKey)
+	gateawaySecret := os.Getenv(gateawaySecretKey)
 
 	cfg.PostgreSQLConfig.URL = postgresURL
 	cfg.ValkeyConfig.URL = valkeyURL
 	cfg.JWTSecret.Secret = jwtSecret
+	cfg.GateawaySecret = gateawaySecret
 
 	return &cfg
 }

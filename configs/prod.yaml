@@ -1,21 +1,20 @@
+---
+cors:
+  allow_credentials: true
+  allowed_headers:
+    - Authorization
+    - Content-Type
+    - Accept
+  allowed_methods:
+    - GET
+    - DELETE
+    - POST
+  allowed_origins:
+    - apigateawaydomain
 http-server:
-  address: "0.0.0.0:10000"
-  timeout: 10s
+  address: 0.0.0.0:10000
   idle_timeout: 30s
-
+  timeout: 10s
 jwt:
   access_ttl: 10m
   refresh_ttl: 168h
-
-cors:
-  allowed_origins: 
-    - "apigateawaydomain"
-  allowed_methods: 
-    - "GET"
-    - "DELETE"
-    - "POST"
-  allowed_headers:
-    - "Authorization"
-    - "Content-Type"
-    - "Accept"
-  allow_credentials: true

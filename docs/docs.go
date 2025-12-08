@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/login": {
+        "/api/auth/login": {
             "post": {
                 "description": "Authenticates a user and returns access and refresh tokens",
                 "consumes": [
@@ -67,7 +67,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/logout": {
+        "/api/auth/logout": {
             "post": {
                 "security": [
                     {
@@ -107,7 +107,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/me": {
+        "/api/auth/me": {
             "get": {
                 "security": [
                     {
@@ -147,7 +147,27 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/public/user": {
+        "/api/auth/ping": {
+            "get": {
+                "description": "Writes \"pong\" in response",
+                "produces": [
+                    "text/plain"
+                ],
+                "tags": [
+                    "ping"
+                ],
+                "summary": "Ping the service",
+                "responses": {
+                    "200": {
+                        "description": "pong",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/public/user": {
             "get": {
                 "description": "Returns a user info by ID query parameter (public data only)",
                 "consumes": [
@@ -191,7 +211,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/refresh": {
+        "/api/auth/refresh": {
             "post": {
                 "description": "Exchanges a refresh token (sent in Authorization header) for a new access token",
                 "consumes": [
@@ -241,7 +261,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/register": {
+        "/api/auth/register": {
             "post": {
                 "description": "Creates a new user account",
                 "consumes": [
@@ -289,6 +309,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "github_com_ayayaakasvin_auth-service_internal_models.Role": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "client"
+            ],
+            "x-enum-varnames": [
+                "Admin",
+                "Client"
+            ]
+        },
         "github_com_ayayaakasvin_auth-service_internal_models.User": {
             "type": "object",
             "properties": {
@@ -299,6 +330,9 @@ const docTemplate = `{
                 "hashed_password": {
                     "type": "string",
                     "example": "$2a1ASDf"
+                },
+                "role": {
+                    "$ref": "#/definitions/github_com_ayayaakasvin_auth-service_internal_models.Role"
                 },
                 "user_id": {
                     "type": "integer",

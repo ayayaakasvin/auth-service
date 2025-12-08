@@ -1,4 +1,12 @@
 definitions:
+  github_com_ayayaakasvin_auth-service_internal_models.Role:
+    enum:
+    - admin
+    - client
+    type: string
+    x-enum-varnames:
+    - Admin
+    - Client
   github_com_ayayaakasvin_auth-service_internal_models.User:
     properties:
       created_at:
@@ -7,6 +15,8 @@ definitions:
       hashed_password:
         example: $2a1ASDf
         type: string
+      role:
+        $ref: '#/definitions/github_com_ayayaakasvin_auth-service_internal_models.Role'
       user_id:
         example: 123
         type: integer
@@ -38,7 +48,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /api/login:
+  /api/auth/login:
     post:
       consumes:
       - application/json
@@ -72,7 +82,7 @@ paths:
       summary: Log in
       tags:
       - auth
-  /api/logout:
+  /api/auth/logout:
     post:
       consumes:
       - application/json
@@ -97,7 +107,7 @@ paths:
       summary: Log out
       tags:
       - auth
-  /api/me:
+  /api/auth/me:
     get:
       consumes:
       - application/json
@@ -122,7 +132,20 @@ paths:
       summary: Get Private User Info
       tags:
       - users
-  /api/public/user:
+  /api/auth/ping:
+    get:
+      description: Writes "pong" in response
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: pong
+          schema:
+            type: string
+      summary: Ping the service
+      tags:
+      - ping
+  /api/auth/public/user:
     get:
       consumes:
       - application/json
@@ -151,7 +174,7 @@ paths:
       summary: Get Public User Info
       tags:
       - users
-  /api/refresh:
+  /api/auth/refresh:
     post:
       consumes:
       - application/json
@@ -185,7 +208,7 @@ paths:
       summary: Refresh access token
       tags:
       - auth
-  /api/register:
+  /api/auth/register:
     post:
       consumes:
       - application/json
