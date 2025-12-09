@@ -14,7 +14,7 @@ const (
 	postgresURLEnvKey = "POSTGRES_URL"
 	valkeyURLEnvKey   = "VALKEY_URL"
 	jwtSecretKey      = "JWT_SECRET"
-	gateawaySecretKey = "GATEAWAY_SECRET_KEY"
+	gateawaySecretKey = "X_GATEAWAY_KEY"
 )
 
 // Config represents the configuration structure
