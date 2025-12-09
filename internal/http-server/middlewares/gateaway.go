@@ -11,7 +11,7 @@ const gateAwayHeader = "X-Gateaway-Key"
 // Since most of mine services are hosted in Render free instance, GateAwayMiddleware is used to make service reachable only via gateaway
 func (mw *Middlewares) GateAwayMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get(gateAwayHeader) != "" {
+		if r.Header.Get(gateAwayHeader) != mw.gateawaySecret {
 			response.SendErrorJson(w, http.StatusForbidden, "Forbidden")
 			return 
 		}
