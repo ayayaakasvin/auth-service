@@ -102,9 +102,9 @@ func (s *ServerApp) setupLightMux() {
 	mws := middlewares.NewHTTPMiddlewares(s.logger, *s.corscfg, s.gateawaySecret, s.cache, s.jwtM)
 	hndlrs := handlers.NewHTTPHandlers(s.repo, s.cache, s.logger, s.jwtM)
 
-	s.lmux.Use(mws.RecoverMiddleware, mws.LoggerMiddleware, mws.CORSMiddleware)
+	s.lmux.Use(mws.RecoverMiddleware, mws.GateAwayMiddleware, mws.LoggerMiddleware, mws.CORSMiddleware)
 
-	apiGroup := s.lmux.NewGroup("/api", mws.GateAwayMiddleware)
+	apiGroup := s.lmux.NewGroup("/api")
 	authGroup := apiGroup.ContinueGroup("/auth")
 
 	authGroup.NewRoute("/ping").Handle(http.MethodGet, hndlrs.PingHandler())
