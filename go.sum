@@ -8,8 +8,10 @@ github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa h
 github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa/go.mod h1:8aeLyX1wLY4RwxT2ggHyFLeDpqskGreDi58JpIEc6p0=
 github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a h1:vE31lHb4yQ/WlJeosFg/ykNPqfpwG+3BraUDSSmpO2k=
 github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a/go.mod h1:3+NAG2c0aNvp83Iq0cckponXmh/u4KdyCOdoTgjfbL4=
-github.com/ayayaakasvin/lightmux v0.0.0-20251112144435-ce75c8447d13 h1:nbuUjPB3KyGpJYlmT+fXmlfA6Nc2gKLaZjzvkknlpqk=
-github.com/ayayaakasvin/lightmux v0.0.0-20251112144435-ce75c8447d13/go.mod h1:3pa++t0+AzSuWRrBX3XWvufEtBxFUwMopYyMPJe8Tdo=
+github.com/ayayaakasvin/goroutinesupervisor v0.0.0-20260224181310-03934b8f9a56 h1:lKf76++FJzkCWYxc9lIxmwY/agBGKOiThtqAoNe4f5c=
+github.com/ayayaakasvin/goroutinesupervisor v0.0.0-20260224181310-03934b8f9a56/go.mod h1:iPoI2jYW5fa1t6oAvtAaAHE3KbkMaTKMuTB7Z3xnZfE=
+github.com/ayayaakasvin/lightmux v0.0.0-20260223204356-7c1b256c39bc h1:VjgwnpYW3DfCYF/W/+lQgKeRjxS9IdLU5v8Xqp/6pQs=
+github.com/ayayaakasvin/lightmux v0.0.0-20260223204356-7c1b256c39bc/go.mod h1:3pa++t0+AzSuWRrBX3XWvufEtBxFUwMopYyMPJe8Tdo=
 github.com/bsm/ginkgo/v2 v2.12.0 h1:Ny8MWAHyOepLGlLKYmXG4IEkioBysk6GpaRTLC8zwWs=
 github.com/bsm/ginkgo/v2 v2.12.0/go.mod h1:SwYbGRRDovPVboqFv0tPTcG1sN61LM1Z4ARdbAV9g4c=
 github.com/bsm/gomega v1.27.10 h1:yeMWxP2pV2fG3FgAODIY8EiRE3dy0aeFYt4l7wh6yKA=
@@ -66,8 +68,9 @@ github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVs
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.6.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
-github.com/stretchr/testify v1.7.0 h1:nwc3DEeHmmLAfoZucVR881uASk0Mfjw8xYJ99tb5CcY=
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
+github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
+github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
 github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe h1:K8pHPVoTgxFJt1lXuIzzOX7zZhZFldJQK/CgKx9BFIc=
 github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe/go.mod h1:lKJPbtWzJ9JhsTN1k1gZgleJWY/cqq0psdoMmaThG3w=
 github.com/swaggo/http-swagger v1.3.4 h1:q7t/XLx0n15H1Q9/tk3Y9L4n210XzJF5WtnDX64a5ww=

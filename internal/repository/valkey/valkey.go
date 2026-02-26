@@ -8,8 +8,6 @@ import (
 
 	"github.com/ayayaakasvin/auth-service/internal/config"
 	"github.com/ayayaakasvin/auth-service/internal/models/core"
-	goshutdownchannel "github.com/ayayaakasvin/go-shutdown-channel"
-
 	"github.com/redis/go-redis/v9"
 )
 
@@ -20,33 +18,26 @@ type Cache struct {
 	connection *redis.Client
 }
 
-func NewValkeyClient(cfg config.ValkeyConfig, s *goshutdownchannel.Shutdown) core.Cache {
+func NewValkeyClient(cfg config.ValkeyConfig) (core.Cache, error) {
 	ctx := context.Background()
 	opt, err := redis.ParseURL(cfg.URL)
 	log.Printf("URL: %s", cfg.URL)
 	if err != nil {
 		msg := fmt.Sprintf("failed to parse Redis URL: %v", err)
-		s.Send(origin, msg)
-		return nil
+		log.Println(msg)
+		return nil, err
 	}
-
-	// for latency
-	// opt.DialTimeout = 30 * time.Second // Increased for Singapore region
-	// opt.ReadTimeout = 30 * time.Second
-	// opt.WriteTimeout = 30 * time.Second
-	// opt.PoolSize = 10
-	// opt.PoolTimeout = 30 * time.Second
 
 	conn := redis.NewClient(opt)
 	if err := conn.Ping(ctx).Err(); err != nil {
-		msg := fmt.Sprintf("failed to connect to db: %v\n", err)
-		s.Send(origin, msg)
-		return nil
+		msg := fmt.Sprintf("failed to connect to db: %v", err)
+		log.Println(msg)
+		return nil, err
 	}
 
 	return &Cache{
 		connection: conn,
-	}
+	}, nil
 }
 
 func (c *Cache) Set(ctx context.Context, key string, value any, ttl time.Duration) error {
@@ -62,7 +53,7 @@ func (c *Cache) Del(ctx context.Context, key string) error {
 }
 
 func (c *Cache) SetNX(ctx context.Context, key string, value any, ttl time.Duration) (bool, error) {
-	set:= c.connection.SetNX(ctx, key, value, ttl)
+	set := c.connection.SetNX(ctx, key, value, ttl)
 	return set.Val(), set.Err()
 }
 

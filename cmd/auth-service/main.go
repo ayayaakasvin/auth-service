@@ -2,63 +2,86 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
-	"sync"
+	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/ayayaakasvin/auth-service/internal/bootstrap"
 	"github.com/ayayaakasvin/auth-service/internal/config"
 	httpserver "github.com/ayayaakasvin/auth-service/internal/http-server"
 	"github.com/ayayaakasvin/auth-service/internal/logger"
-	"github.com/ayayaakasvin/auth-service/internal/repository/postgresql"
-	"github.com/ayayaakasvin/auth-service/internal/repository/valkey"
 	"github.com/ayayaakasvin/auth-service/internal/services/jwtservice"
-	goshutdownchannel "github.com/ayayaakasvin/go-shutdown-channel"
+	"github.com/ayayaakasvin/goroutinesupervisor"
+	"github.com/sirupsen/logrus"
 
 	_ "github.com/ayayaakasvin/auth-service/docs"
 )
 
 func main() {
-	// core elements, main context used in lifecycle and wg to keep app alive
-	mainCtx, cancel := context.WithCancel(context.Background())
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
+	if err := run(); err != nil {
+		fmt.Fprintf(os.Stderr, "fatal: %v\n", err)
+		os.Exit(1)
+	}
+}
 
-	// logger
+func run() error {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
 	log := logger.SetupLogger("Auth-Service")
-
-	// config
 	cfg := config.MustLoadConfig()
-	log.Infof("Configs retrieved: %v", cfg)
 
-	s := goshutdownchannel.NewShutdown(mainCtx, cancel)
-	s.Notify(os.Interrupt, syscall.SIGTERM)
-
-	// dependencies
-	cc := valkey.NewValkeyClient(cfg.ValkeyConfig, s)
-	repo := postgresql.NewPostgreSQLConnection(cfg.PostgreSQLConfig, s)
-	// cc := valkey.NewValkey_Mock()
-	// repo := postgresql.NewPostgreSQL_Mock()
+	repo, err := bootstrap.InitRepository(cfg)
+	if err != nil {
+		return fmt.Errorf("init error: %s", err)
+	}
+	cache, err := bootstrap.InitCache(cfg)
+	if err != nil {
+		return fmt.Errorf("init error: %s", err)
+	}
 	jwtM := jwtservice.NewJWTManager(&cfg.JWTSecret)
-	log.Info("Dependencies retrieved")
 
-	app := httpserver.NewServerApp(s, &cfg.HTTPServer, &cfg.CorsConfig, cfg.GateawaySecret, log, repo, cc, jwtM)
-	log.Info("New Application set up finished")
+	gs := setupSupervisor(ctx, log)
 
-	go func() {
-		defer wg.Done()
+	app := httpserver.NewServerApp(
+		&cfg.HTTPServer,
+		&cfg.CorsConfig,
+		cfg.GateawaySecret,
+		log,
+		repo,
+		cache,
+		jwtM,
+	)
 
-		<-s.Done()
-		log.Println(s.Message())
+	gs.Go("http-server", app.Start)
 
-		_, cancel := context.WithTimeout(context.Background(), time.Second*10)
-		defer cancel()
+	err = gs.Wait()
 
-		log.WithError(mainCtx.Err()).Info("Gracefully Shutdowning...")
-	}()
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	go app.Run()
+	app.Stop(shutdownCtx)
+	repo.Close()
+	cache.Close()
 
-	wg.Wait()
-	log.WithError(mainCtx.Err()).Info("Graceful Shutdown completed")
+	return err
+}
+
+func setupSupervisor(ctx context.Context, log *logrus.Logger) *goroutinesupervisor.GoRoutineSupervisor {
+	gs := goroutinesupervisor.NewSupervisor(ctx)
+	gs.WithHandler(func(e goroutinesupervisor.Event) {
+		switch e.Type {
+		case goroutinesupervisor.EventTaskStarted:
+			log.Infof("Task %s started at %s", e.Task, e.Started.String())
+		case goroutinesupervisor.EventTaskFinished:
+			log.Infof("Task %s finished at %s", e.Task, e.Ended.String())
+		case goroutinesupervisor.EventTaskFailed:
+			log.Infof("Task %s failed at %s", e.Task, e.Ended.String())
+		default:
+		}
+	})
+
+	return gs
 }

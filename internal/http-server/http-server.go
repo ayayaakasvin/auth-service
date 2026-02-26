@@ -10,7 +10,6 @@ import (
 	"github.com/ayayaakasvin/auth-service/internal/http-server/middlewares"
 	"github.com/ayayaakasvin/auth-service/internal/models/core"
 	"github.com/ayayaakasvin/auth-service/internal/services/jwtservice"
-	goshutdownchannel "github.com/ayayaakasvin/go-shutdown-channel"
 	"github.com/ayayaakasvin/lightmux"
 	"github.com/sirupsen/logrus"
 
@@ -21,7 +20,6 @@ type ServerApp struct {
 	server *http.Server
 
 	lmux *lightmux.LightMux
-	s    *goshutdownchannel.Shutdown
 
 	repo  core.Repository
 	cache core.Cache
@@ -35,7 +33,6 @@ type ServerApp struct {
 }
 
 func NewServerApp(
-	s *goshutdownchannel.Shutdown,
 	httpcfg *config.HTTPServer,
 	corscfg *config.CorsConfig,
 	gateawaySecret string,
@@ -52,39 +49,26 @@ func NewServerApp(
 		logger: logger,
 		repo:   repo,
 		cache:  cache,
-		s:      s,
 		jwtM:   jwtM,
 	}
 }
 
-func (s *ServerApp) Run() {
+func (s *ServerApp) Start(ctx context.Context) error {
 	s.setupServer()
-
 	s.setupLightMux()
 
-	s.startServer()
+	go printServerStatus(ctx, s.logger)
+	return s.lmux.Run(ctx)
 }
 
-func (s *ServerApp) startServer() {
-	s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
-	s.logger.Infof("Available handlers:\n")
-
-	s.lmux.PrintMiddlewareInfo()
-	s.lmux.PrintRoutes()
-
-	go printServerStatus(s.s.Context(), s.logger)
-
-	// RunTLS can be run when server is hosted on domain, acts as seperate service of file storing, for my project, id chose to encapsulate servers under one docker-compose and make nginx-gateaway for my api like auth, file, user service
-	// if err := s.lmux.RunTLS(s.cfg.TLS.CertFile, s.cfg.TLS.KeyFile); err != nil {
-	if err := s.lmux.RunContext(s.s.Context()); err != nil {
-		s.logger.Fatalf("Server exited with error: %v", err)
-	}
+func (s *ServerApp) Stop(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }
 
 // setuping server by pointer, so we dont have to return any value
 func (s *ServerApp) setupServer() {
 	if s.server == nil {
-		// s.logger.Warn("Server is nil, creating a new server pointer")
+		s.logger.Warn("Server is nil, creating a new server pointer")
 		s.server = &http.Server{}
 	}
 
@@ -94,6 +78,11 @@ func (s *ServerApp) setupServer() {
 	s.server.WriteTimeout = s.httpcfg.Timeout
 
 	s.logger.Info("Server has been set up")
+	s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
+	s.logger.Infof("Available handlers:\n")
+
+	s.lmux.PrintMiddlewareInfo()
+	s.lmux.PrintRoutes()
 }
 
 func (s *ServerApp) setupLightMux() {
@@ -108,7 +97,6 @@ func (s *ServerApp) setupLightMux() {
 	authGroup := apiGroup.ContinueGroup("/auth")
 
 	authGroup.NewRoute("/ping").Handle(http.MethodGet, hndlrs.PingHandler())
-	// apiGroup.NewRoute("/panic").Handle(http.MethodGet, PanicHandler())
 
 	authGroup.NewRoute("/login", mws.RateLimitLoginMiddleware).Handle(http.MethodPost, hndlrs.LogIn())
 	authGroup.NewRoute("/register", mws.RateLimitRegisterMiddleware).Handle(http.MethodPost, hndlrs.Register())
@@ -133,12 +121,5 @@ func printServerStatus(ctx context.Context, log *logrus.Logger) {
 		case <-ctx.Done():
 			return
 		}
-	}
-}
-
-// Used for recover test
-func PanicHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		panic("ambatubas")
 	}
 }
