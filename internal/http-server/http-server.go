@@ -58,17 +58,11 @@ func (s *ServerApp) Start(ctx context.Context) error {
 	s.setupServer()
 	s.setupLightMux()
 
-	go printServerStatus(ctx, s.logger)
+	go s.printServerStatus(ctx)
+	go s.memStatPrint(ctx)
 	return func() error {
 		s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
-		go func() {
-			for {
-				var m runtime.MemStats
-				runtime.ReadMemStats(&m)
-				s.logger.Infof("Alloc = %v MiB", m.Alloc/1024/1024)
-				time.Sleep(1 * time.Second)
-			}
-		}()
+
 		return s.lmux.Run(ctx)
 	}()
 }
@@ -121,15 +115,29 @@ func (s *ServerApp) setupLightMux() {
 	s.lmux.PrintRoutes()
 }
 
-func printServerStatus(ctx context.Context, log *logrus.Logger) {
+func (s *ServerApp) printServerStatus(ctx context.Context) {
 	ticker := time.NewTicker(time.Minute * 1)
 
 	for {
 		select {
 		case <-ticker.C:
-			log.Info("Server is alive...")
+			s.logger.Info("Server is alive...")
 		case <-ctx.Done():
 			return
 		}
+	}
+}
+
+func (s *ServerApp) memStatPrint(ctx context.Context) {
+	ticker := time.NewTicker(time.Second * 15)
+
+	select {
+	case <-ticker.C:
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+		s.logger.Infof("Alloc = %v MiB", m.Alloc/1024/1024)
+		time.Sleep(1 * time.Second)
+	case <-ctx.Done():
+		return
 	}
 }
