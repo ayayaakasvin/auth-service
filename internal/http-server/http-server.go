@@ -3,6 +3,7 @@ package httpserver
 import (
 	"context"
 	"net/http"
+	"runtime"
 	"time"
 
 	"github.com/ayayaakasvin/auth-service/internal/config"
@@ -58,7 +59,18 @@ func (s *ServerApp) Start(ctx context.Context) error {
 	s.setupLightMux()
 
 	go printServerStatus(ctx, s.logger)
-	return s.lmux.Run(ctx)
+	return func() error {
+		s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
+		go func() {
+			for {
+				var m runtime.MemStats
+				runtime.ReadMemStats(&m)
+				s.logger.Infof("Alloc = %v MiB", m.Alloc/1024/1024)
+				time.Sleep(1 * time.Second)
+			}
+		}()
+		return s.lmux.Run(ctx)
+	}()
 }
 
 func (s *ServerApp) Stop(ctx context.Context) error {
@@ -78,11 +90,6 @@ func (s *ServerApp) setupServer() {
 	s.server.WriteTimeout = s.httpcfg.Timeout
 
 	s.logger.Info("Server has been set up")
-	s.logger.Infof("Server has been started on port: %s", s.httpcfg.Address)
-	s.logger.Infof("Available handlers:\n")
-
-	s.lmux.PrintMiddlewareInfo()
-	s.lmux.PrintRoutes()
 }
 
 func (s *ServerApp) setupLightMux() {
@@ -109,6 +116,9 @@ func (s *ServerApp) setupLightMux() {
 	s.lmux.Mux().HandleFunc("/docs/", httpSwagger.WrapHandler)
 
 	s.logger.Info("LightMux has been set up")
+	s.logger.Infof("Available handlers:\n")
+	s.lmux.PrintMiddlewareInfo()
+	s.lmux.PrintRoutes()
 }
 
 func printServerStatus(ctx context.Context, log *logrus.Logger) {
