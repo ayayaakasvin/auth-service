@@ -19,7 +19,6 @@ require (
 	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.7.6 // indirect
-	github.com/stretchr/testify v1.11.1 // indirect
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe // indirect
 	golang.org/x/net v0.46.0 // indirect
 	golang.org/x/sys v0.38.0 // indirect
@@ -29,7 +28,6 @@ require (
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
-	github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a
 	github.com/ayayaakasvin/goroutinesupervisor v0.0.0-20260224181310-03934b8f9a56
 	github.com/ayayaakasvin/lightmux v0.0.0-20260223204356-7c1b256c39bc
 	github.com/golang-jwt/jwt/v5 v5.3.0

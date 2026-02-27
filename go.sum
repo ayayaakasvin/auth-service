@@ -6,8 +6,6 @@ github.com/agiledragon/gomonkey/v2 v2.3.1 h1:k+UnUY0EMNYUFUAQVETGY9uUTxjMdnUkP0A
 github.com/agiledragon/gomonkey/v2 v2.3.1/go.mod h1:ap1AmDzcVOAz1YpeJ3TCzIgstoaWLA6jbbgxfB4w2iY=
 github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa h1:126OQFNEBcjvrYhVV0E4j5hpN5b6wiL8G8M2FxV/XJg=
 github.com/ayayaakasvin/generic-jwt-service v0.0.0-20251202130648-da6254bb56fa/go.mod h1:8aeLyX1wLY4RwxT2ggHyFLeDpqskGreDi58JpIEc6p0=
-github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a h1:vE31lHb4yQ/WlJeosFg/ykNPqfpwG+3BraUDSSmpO2k=
-github.com/ayayaakasvin/go-shutdown-channel v0.0.0-20251107125614-273d8e615b8a/go.mod h1:3+NAG2c0aNvp83Iq0cckponXmh/u4KdyCOdoTgjfbL4=
 github.com/ayayaakasvin/goroutinesupervisor v0.0.0-20260224181310-03934b8f9a56 h1:lKf76++FJzkCWYxc9lIxmwY/agBGKOiThtqAoNe4f5c=
 github.com/ayayaakasvin/goroutinesupervisor v0.0.0-20260224181310-03934b8f9a56/go.mod h1:iPoI2jYW5fa1t6oAvtAaAHE3KbkMaTKMuTB7Z3xnZfE=
 github.com/ayayaakasvin/lightmux v0.0.0-20260223204356-7c1b256c39bc h1:VjgwnpYW3DfCYF/W/+lQgKeRjxS9IdLU5v8Xqp/6pQs=
